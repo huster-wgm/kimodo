@@ -11,6 +11,44 @@ from setuptools import Extension, find_packages, setup
 from setuptools.command.build_ext import build_ext
 
 
+PYTHON_REQUIRES = ">=3.8"
+INSTALL_REQUIRES = [
+    "hydra-core>=1.3",
+    "omegaconf>=2.3",
+    "numpy>=1.23",
+    "scipy>=1.10",
+    "transformers==5.1.0",
+    "urllib3>=2.6.3",
+    "boto3",
+    "peft>=0.18",
+    "einops>=0.7",
+    "tqdm>=4.0",
+    "packaging>=21.0",
+    "pydantic>=2.0",
+    "filelock>=3.20.3",
+    "gradio>=6.8.0",
+    "gradio_client>=1.0",
+    "trimesh>=3.21.7",
+    "scenepic>=1.1.0",
+    "pillow>=9.0",
+    "av>=16.1.0",
+    "bvhio",
+]
+EXTRAS_REQUIRE = {
+    "demo": ["viser @ git+https://github.com/nv-tlabs/kimodo-viser.git"],
+    "soma": ["py-soma-x @ git+https://github.com/NVlabs/SOMA-X.git"],
+}
+EXTRAS_REQUIRE["all"] = EXTRAS_REQUIRE["demo"] + EXTRAS_REQUIRE["soma"]
+ENTRY_POINTS = {
+    "console_scripts": [
+        "kimodo_gen=kimodo.scripts.generate:main",
+        "kimodo_demo=kimodo.demo:main",
+        "kimodo_textencoder=kimodo.scripts.run_text_encoder_server:main",
+        "kimodo_convert=kimodo.scripts.motion_convert:main",
+    ]
+}
+
+
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=""):
         super().__init__(name, sources=[])
@@ -112,6 +150,15 @@ else:
     cmdclass = {"build_ext": CMakeBuild}
 
 setup(
+    name="kimodo",
+    version="1.0.0",
+    description="Kimodo motion generation model",
+    python_requires=PYTHON_REQUIRES,
+    install_requires=INSTALL_REQUIRES,
+    extras_require=EXTRAS_REQUIRE,
+    entry_points=ENTRY_POINTS,
+    include_package_data=True,
+    zip_safe=False,
     packages=packages,
     package_dir=package_dir,
     ext_modules=ext_modules,
